@@ -1,12 +1,5 @@
-import mysql from "mysql";
+import knex from "knex";
+import knexConfig from "./knexfile.js";
 
-const database = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  port: "3306",
-  password: "password",
-  database: "clicky",
-});
 
-export default database;
-export const config = database.config;
+export default knex(knexConfig.development);
