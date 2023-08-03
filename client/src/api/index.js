@@ -13,7 +13,6 @@ const checkTokenExpiration = () => {
 
   // Decode the token to get the expiration date
   const decodedToken = JSON.parse(atob(token.split(".")[1]));
-  console.log({ decodedToken });
   const expirationDate = new Date(decodedToken.exp * 1000); // Convert to milliseconds
 
   // Check if the token has expired
@@ -46,7 +45,7 @@ authenticatedAPI.interceptors.request.use(
 authenticatedAPI.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response.status === 401) {
+    if (error.response && error.response.status === 401) {
       alert("Session expired. Please login again.");
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -56,4 +55,9 @@ authenticatedAPI.interceptors.response.use(
   }
 );
 
-export const isLoggedIn = () => authenticatedAPI.get("/auth/isLoggedIn");
+export const fileUploadAPI = (file) =>
+  authenticatedAPI.post("/file/parse-file", file, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
