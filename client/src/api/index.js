@@ -1,35 +1,38 @@
 import axios from "axios";
-import jwt from "jsonwebtoken";
+// import jwtDecode from "jwt-decode";
 
 const API = axios.create({
   baseURL: "http://localhost:5000",
   withCredentials: true,
 });
 const checkTokenExpiration = () => {
-  const token = localStorage.get("token");
+  const token = localStorage.getItem("token");
   if (!token) {
     return;
   }
 
   // Decode the token to get the expiration date
-  const decodedToken = jwt.decode(token);
+  const decodedToken = JSON.parse(atob(token.split(".")[1]));
+  console.log({ decodedToken });
   const expirationDate = new Date(decodedToken.exp * 1000); // Convert to milliseconds
 
   // Check if the token has expired
   if (expirationDate < new Date()) {
     // Clear the expired token
-    localStorage.remove("token");
-    localStorage.remove("user");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
   }
 };
 
 export const loginAPI = (user) => API.post("/auth/login", user);
 export const logoutAPI = () => API.post("/auth/logout");
 
-API.interceptors.request.use(
+const authenticatedAPI = API;
+
+authenticatedAPI.interceptors.request.use(
   async (config) => {
     checkTokenExpiration();
-    const token = localStorage.get("token");
+    const token = localStorage.getItem("token");
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -40,13 +43,17 @@ API.interceptors.request.use(
   }
 );
 
-API.interceptors.response.use(
+authenticatedAPI.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response.status === 401) {
-      localStorage.remove("token");
-      localStorage.remove("user");
+      alert("Session expired. Please login again.");
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   }
 );
+
+export const isLoggedIn = () => authenticatedAPI.get("/auth/isLoggedIn");

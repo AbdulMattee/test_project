@@ -32,6 +32,7 @@ const LoginForm = () => {
         token: response.token,
       });
     } catch (err) {
+      console.log(err)
       alert(err.message);
     }
   };

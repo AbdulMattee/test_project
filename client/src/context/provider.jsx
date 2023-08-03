@@ -12,7 +12,6 @@ const AppContextProvider = ({ children }) => {
   useEffect(() => {
     const authToken = localStorage.getItem("token");
     const user = JSON.parse(localStorage.getItem("user"));
-    console.log({ authToken, user });
     if (authToken) {
       setUser({
         token: authToken,

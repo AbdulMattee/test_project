@@ -22,7 +22,7 @@ export const AuthLogin = async (req, res) => {
     req.session.token = token;
 
     return res.json({
-      user,
+      user: { userId: user.userId, username: user.username },
       token,
       success: true,
     });
@@ -40,7 +40,7 @@ export const AuthLogout = async (req, res) => {
       throw new Error("User already logged out");
     }
     req.session.destroy();
-    res.clearCookie('connect.sid');
+    res.clearCookie("connect.sid");
     return res.json({
       content: "Logged out successfully",
       success: true,

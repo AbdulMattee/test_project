@@ -10,6 +10,8 @@ import cookieParser from "cookie-parser";
 
 import session from "express-session";
 
+import cors from "cors";
+
 dotenv.config();
 
 database
@@ -18,6 +20,11 @@ database
   .catch((err) => console.log(err.message));
 
 const app = express();
+app.use(cors({
+  origin: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+}))
 
 app.use(cookieParser());
 app.use(express.json());

@@ -3,8 +3,9 @@ import { verifyToken } from "../shared/jwt.js";
 
 export const isLoggedIn = (req, res, next) => {
   try {
+    if (!req.headers.authorization) throw new Error("Unauthorized Access");
     const token = req.headers.authorization.split(" ")[1];
-    
+
     if (!token || req.session.token !== token) {
       throw new Error("Unauthorized Access");
     }
